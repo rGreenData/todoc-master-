@@ -1,0 +1,104 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class MainActivity extends AppCompatActivity implements DeleteTaskListener {
+
+    - Project[] allProjects {readOnly}
+    - ArrayList<Task> tasks {readOnly}
+    - TasksAdapter adapter {readOnly}
+    - SortMethod sortMethod
+    + AlertDialog dialog
+    - Spinner dialogSpinner
+    - RecyclerView listTasks
+
+    - onPositiveButtonClick(DialogInterface)
+    - showAddTaskDialog()
+    - addTask(Task task)
+    - updateTasks()
+    - AlertDialog getAddTaskDialog()
+    - populateDialogSpinner()
+    - enum SortMethod{ALPHABETICAL,
+                              ALPHABETICAL_INVERTED,
+                              RECENT_FIRST,
+                              OLD_FIRST,
+                              NONE}
+}
+
+
+class Task {
+    - long id;
+    - long projectId;
+    - String name;
+    - long creationTimestamp;
+
+    + Task(long, long, String, long)
+    + long getId() id;
+    - setId(long id) void
+    - setProjectId(long projectId) void
+    + Project getProject() Project.getProjectById(projectId);
+    + String getName() name
+    - setName(String) void
+    - setCreationTimestamp(long) void
+}
+
+ class TaskAZComparator <<static>> implements Comparator {
+        + int compare(Task left, Task right)
+        right.name.compareTo(left.name);
+
+    }
+
+class TaskRecentComparator <<static>> implements Comparator {
+        + int compare(Task left, Task right)
+           (right.creationTimestamp - left.creationTimestamp)
+
+    }
+
+ class TaskOldComparator <<static>> implements Comparator{
+        + int compare(Task left, Task right)
+            (left.creationTimestamp - right.creationTimestamp)
+
+    }
+
+class Project {
+    -long id {readOnly}
+    -String name {readOnly}
+    -int color {readOnly}
+
+    -Project(long ,  String , int)
+    +{static} Project[] getAllProjects() Project[]
+    +{static} Project getProjectById(long id) Project
+    +long getId() id
+    +String getName() name
+    +int getColor() color
+    +String toString() getName
+    }
+
+class TasksAdapter extends RecyclerView.Adapter{
+    private List<Task> tasks;
+    private final DeleteTaskListener deleteTaskListener;
+    TasksAdapter(@NonNull final List<Task> tasks, @NonNull final DeleteTaskListener deleteTaskListener)
+    void updateTasks(@NonNull final List<Task> tasks)
+    public interface DeleteTaskListener
+    bind(Task task) void
+}
+
+class TaskViewHolder extends RecyclerView.ViewHolder {
+        - AppCompatImageView imgProject {readOnly}
+        - TextView lblTaskName {readOnly}
+        - TextView lblProjectName {readOnly}
+        - AppCompatImageView imgDelete {readOnly}
+        - DeleteTaskListener deleteTaskListener {readOnly}
+          TaskViewHolder(View, DeleteTaskListener)
+    }
+
+interface DeleteTaskListener {
+            void onDeleteTask(Task task);
+        }
+
+
+TasksAdapter +-- DeleteTaskListener
+TasksAdapter +-- TaskViewHolder
+Task +-- TaskAZComparator
+Task +-- TaskRecentComparator
+Task +-- TaskOldComparator
+@enduml
