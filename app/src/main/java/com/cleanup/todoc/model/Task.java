@@ -10,6 +10,7 @@ import java.util.Comparator;
  *
  * @author Gaëtan HERFRAY
  */
+
 public class Task {
     /**
      * The unique identifier of the task
@@ -46,7 +47,7 @@ public class Task {
         this.setId(id);
         this.setProjectId(projectId);
         this.setName(name);
-        this.setCreationTimestamp(creationTimestamp);
+        this. setCreationTimestamp(creationTimestamp);
     }
 
     /**

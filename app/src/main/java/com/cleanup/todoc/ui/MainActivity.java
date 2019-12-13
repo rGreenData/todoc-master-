@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      */
     @NonNull
     private final ArrayList<Task> tasks = new ArrayList<>();
-
+    //TODO BD READ
     /**
      * The adapter which handles the list of tasks
      */
@@ -94,10 +94,13 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
         setContentView(R.layout.activity_main);
 
+        //Initialize the RecyclerView
         listTasks = findViewById(R.id.list_tasks);
+        //Initialize the TextView with a message
         lblNoTasks = findViewById(R.id.lbl_no_task);
 
         listTasks.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
         listTasks.setAdapter(adapter);
 
         findViewById(R.id.fab_add_task).setOnClickListener(new View.OnClickListener() {
