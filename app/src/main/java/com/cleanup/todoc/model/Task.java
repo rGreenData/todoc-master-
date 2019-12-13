@@ -1,5 +1,6 @@
 package com.cleanup.todoc.model;
 
+import android.arch.persistence.room.Entity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -10,7 +11,7 @@ import java.util.Comparator;
  *
  * @author Gaëtan HERFRAY
  */
-
+@Entity
 public class Task {
     /**
      * The unique identifier of the task

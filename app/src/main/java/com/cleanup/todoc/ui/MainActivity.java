@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         return super.onOptionsItemSelected(item);
     }
 
+    //TODO onDeleteTask
     @Override
     public void onDeleteTask(Task task) {
         tasks.remove(task);
@@ -175,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                         taskName,
                         new Date().getTime()
                 );
-
+                //TODO onPositiveButtonClick addTask(task)
                 addTask(task);
 
                 dialogInterface.dismiss();
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                 dialogInterface.dismiss();
             }
         }
-        // If dialog is aloready closed
+        // If dialog is already closed
         else {
             dialogInterface.dismiss();
         }
@@ -210,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      *
      * @param task the task to be added to the list
      */
+    //TODO addTask
     private void addTask(@NonNull Task task) {
         tasks.add(task);
         updateTasks();
@@ -218,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * Updates the list of tasks in the UI
      */
+    //TODO updateTask
     private void updateTasks() {
         if (tasks.size() == 0) {
             lblNoTasks.setVisibility(View.VISIBLE);
