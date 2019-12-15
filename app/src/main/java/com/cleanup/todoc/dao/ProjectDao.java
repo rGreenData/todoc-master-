@@ -15,7 +15,7 @@ public interface ProjectDao {
     LiveData<Project> getProject(long projectId);
 
     @Insert
-    long insertProject(Project pProject);
+    long createProject(Project pProject);
 
     @Query("DELETE FROM project WHERE id = :projectId")
     int deleteProject(long projectId);
