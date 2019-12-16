@@ -1,6 +1,8 @@
 package com.cleanup.todoc.model;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -53,6 +55,7 @@ public class Project {
      */
     @NonNull
     public static Project[] getAllProjects() {
+        //TODO FOR LOOP TO ADD project in database project
         return new Project[]{
                 new Project(1L, "Projet Tartampion", 0xFFEADAD1),
                 new Project(2L, "Projet Lucidia", 0xFFB4CDBA),
