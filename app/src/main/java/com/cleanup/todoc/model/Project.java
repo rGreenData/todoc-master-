@@ -55,7 +55,9 @@ public class Project {
      */
     @NonNull
     public static Project[] getAllProjects() {
-        //TODO FOR LOOP TO ADD project in database project
+       //TODO ProjectList
+
+
         return new Project[]{
                 new Project(1L, "Projet Tartampion", 0xFFEADAD1),
                 new Project(2L, "Projet Lucidia", 0xFFB4CDBA),

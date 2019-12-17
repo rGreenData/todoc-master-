@@ -7,11 +7,11 @@ import com.cleanup.todoc.model.Task;
 
 import java.util.List;
 
-public class TaskRepository {
+public class TaskDataRepository {
 
     private final TaskDao taskDao;
 
-    public TaskRepository(TaskDao pTaskDao) {
+    public TaskDataRepository(TaskDao pTaskDao) {
         taskDao = pTaskDao;
     }
 
@@ -22,7 +22,6 @@ public class TaskRepository {
      * @return the project with the given unique identifier
      */
     public LiveData<List<Task>> getTask(long projectId){ return taskDao.getTask(projectId); }
-
 
     /** Add the task given
      *

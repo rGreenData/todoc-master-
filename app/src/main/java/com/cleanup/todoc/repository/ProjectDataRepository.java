@@ -8,11 +8,11 @@ import com.cleanup.todoc.model.Project;
 
 import java.util.List;
 
-public class ProjectRepository {
+public class ProjectDataRepository {
 
     private final ProjectDao projectDao;
 
-    public ProjectRepository(ProjectDao pProjectDao) {
+    public ProjectDataRepository(ProjectDao pProjectDao) {
         projectDao = pProjectDao;
     }
 
@@ -21,9 +21,12 @@ public class ProjectRepository {
         return this.projectDao.getProject(projectId);
     }
 
+
     public LiveData<List<Project>> getAllProject()
     {
 
         return this.projectDao.getAllProject();
     }
+
+    public void addProject(Project project){ this.projectDao.createProject(project); }
 }

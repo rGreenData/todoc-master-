@@ -101,7 +101,7 @@ public class TodocDataBaseTest {
 
         assertTrue(taskList.size() == 3);
     }
-
+/*
     @Test
     public void insertAndUpdateTask()throws InterruptedException{
         // Before : INSERT a demo project and a demo task.
@@ -118,7 +118,7 @@ public class TodocDataBaseTest {
         assertTrue(tasks.size() == 1 && taskUpDate.getName() == "Hello");
 
     }
-
+*/
     @Test
     public void insertAndDeleteTask() throws InterruptedException{
 

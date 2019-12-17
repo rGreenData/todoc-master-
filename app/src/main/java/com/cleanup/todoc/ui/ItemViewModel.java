@@ -5,21 +5,23 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
-import com.cleanup.todoc.repository.ProjectRepository;
-import com.cleanup.todoc.repository.TaskRepository;
+import com.cleanup.todoc.repository.ProjectDataRepository;
+import com.cleanup.todoc.repository.TaskDataRepository;
+
+import java.util.List;
 import java.util.concurrent.Executor;
 
 public class ItemViewModel extends ViewModel {
 
     //REPOSITORIES
-    private final TaskRepository itemDataSource;
-    private final ProjectRepository projectDataSource;
+    private final TaskDataRepository itemDataSource;
+    private final ProjectDataRepository projectDataSource;
     private final Executor executor;
 
     //DATA
     private LiveData<Project> currrentProject;
 
-    public ItemViewModel(TaskRepository pItemDataSource, ProjectRepository pProjectDataSource, Executor pExecutor) {
+    public ItemViewModel(TaskDataRepository pItemDataSource, ProjectDataRepository pProjectDataSource, Executor pExecutor) {
         this.itemDataSource = pItemDataSource;
         this.projectDataSource = pProjectDataSource;
         this.executor = pExecutor;
@@ -29,20 +31,32 @@ public class ItemViewModel extends ViewModel {
         if(this.currrentProject != null){
             return;
         }
-        //TODO FOR LOOP TO ADD project in database
+
         currrentProject = projectDataSource.getProject(projectId);
     }
 
-    //FOR USER
+    //FOR PROJECT
     public LiveData<Project> getProject(long projectId){ return this.currrentProject; }
 
+    //FOR PROJECT
+    public LiveData<List<Project>>getAllProject(){ return this.projectDataSource.getAllProject(); }
+
+    //FOR PROJECT
+    public void addProject(final Project  project){ executor.execute(new Runnable() {
+        @Override
+        public void run() {
+            projectDataSource.addProject(project);
+        }
+    });
+    }
+
     //FOR TASK
-    public void  addTask(Task pTask){
-        final Task task = pTask;
+    public void  addTask(final Task pTask){
+
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                itemDataSource.addTask(task);
+                itemDataSource.addTask(pTask);
             }
         });
     }
@@ -58,7 +72,7 @@ public class ItemViewModel extends ViewModel {
         });
     }
 
-
-
+    //FOR TASK
+    public LiveData<List<Task>> getTask(long projectId){ return itemDataSource.getTask(projectId); }
 
 }

@@ -1,5 +1,8 @@
 package com.cleanup.todoc.ui;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,13 +20,18 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.cleanup.todoc.Injection.Injection;
+import com.cleanup.todoc.Injection.ViewModelFactory;
 import com.cleanup.todoc.R;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>Home activity of the application which is displayed when the user opens the app.</p>
@@ -35,7 +43,13 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * List of all projects available in the application
      */
-    private final Project[] allProjects = Project.getAllProjects();
+    //private final Project[] allProjects = Project.getAllProjects();
+    private List<Project> allProjects = new ArrayList<>();
+
+    /**
+     * For data
+     */
+    private final long PROJECT_ID = 1;
 
     /**
      * List of all current tasks of the application
@@ -88,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     @NonNull
     private TextView lblNoTasks;
 
+    private ItemViewModel itemViewModel;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +124,18 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                 showAddTaskDialog();
             }
         });
+
+        //Configure ViewModel
+        configureViewModel();
+
+        //get all project in the database
+        this.getAllProject();
+
+        //Get current Project & items from Database
+        this.getItems(PROJECT_ID);
+
+
+
     }
 
     @Override
@@ -139,7 +166,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     //TODO onDeleteTask
     @Override
     public void onDeleteTask(Task task) {
-        tasks.remove(task);
+       // tasks.remove(task);
+        this.itemViewModel.deleteTask(task.getId());
         updateTasks();
     }
 
@@ -167,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             // If both project and name of the task have been set
             else if (taskProject != null) {
                 // TODO: Replace this by id of persisted task
-                long id = (long) (Math.random() * 50000);
+               // long id = (long) (Math.random() * 50000);
 
 
                 Task task = new Task(
@@ -177,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                 );
                 //TODO onPositiveButtonClick addTask(task)
                 addTask(task);
+
 
                 dialogInterface.dismiss();
             }
@@ -212,7 +241,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      */
     //TODO addTask
     private void addTask(@NonNull Task task) {
-        tasks.add(task);
+        //tasks.add(task);
+        itemViewModel.addTask(task);
         updateTasks();
     }
 
@@ -324,5 +354,52 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
          * No sort
          */
         NONE
+    }
+
+    //Configuring ViewModel
+    private void configureViewModel(){
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
+        this.itemViewModel = ViewModelProviders.of(this, viewModelFactory).get(ItemViewModel.class);
+        this.itemViewModel.init(PROJECT_ID);
+
+    }
+
+    public void getItems(final long projectId){
+        this.itemViewModel.getTask(projectId).observe(this, new Observer<List<Task>>() {
+            @Override
+            public void onChanged(@Nullable List<Task> pTasks) {
+                adapter.updateTasks(pTasks);
+            }
+        });
+    }
+
+    //Get all project in the database
+    public void getAllProject(){
+        this.itemViewModel.getAllProject().observe(this, new Observer<List<Project>>() {
+            @Override
+            public void onChanged(@Nullable List<Project> pProjects) {
+                allProjects = pProjects;
+            }
+        });
+
+        if(allProjects.isEmpty())
+            //Insert project in database
+            this.addProjects();
+
+    }
+
+    public void currentProject(final long projectId){
+        itemViewModel.getProject(projectId).observe(this, new Observer<Project>() {
+            @Override
+            public void onChanged(@Nullable Project pProject) {
+
+            }
+        });
+    }
+
+    public void addProjects(){
+        itemViewModel.addProject(new Project(1L, "Projet Tartampion", 0xFFEADAD1));
+        itemViewModel.addProject(new Project(2L, "Projet Lucidia", 0xFFB4CDBA));
+        itemViewModel.addProject(new Project(3L, "Projet Circus", 0xFFA3CED2));
     }
 }
