@@ -28,6 +28,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     private List<Task> tasks;
 
     /**
+     * The project matches to the current tasks
+     */
+    private List<Project> taskProject;
+
+    /**
      * The listener for when a task needs to be deleted
      */
     @NonNull
@@ -48,9 +53,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
      *
      * @param tasks the list of tasks the adapter deals with to set
      */
-    void updateTasks(@NonNull final List<Task> tasks) {
+    void updateTasks(List<Project> taskProject, @NonNull final List<Task> tasks) {
+        this.taskProject = taskProject;
         this.tasks = tasks;
         notifyDataSetChanged();
+
     }
 
     @NonNull
@@ -148,11 +155,17 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         void bind(Task task) {
             lblTaskName.setText(task.getName());
             imgDelete.setTag(task);
+            //TODO
+            //final Project taskProject = task.getProject();
 
-            final Project taskProject = task.getProject();
             if (taskProject != null) {
-                imgProject.setSupportImageTintList(ColorStateList.valueOf(taskProject.getColor()));
-                lblProjectName.setText(taskProject.getName());
+
+                for (int i = 0; i < taskProject.size(); i++) {
+                    if (taskProject.get(i).getId() == task.getProjectId()) {
+                        imgProject.setSupportImageTintList(ColorStateList.valueOf(taskProject.get(i).getColor()));
+                        lblProjectName.setText(taskProject.get(i).getName());
+                    }
+                }
             } else {
                 imgProject.setVisibility(View.INVISIBLE);
                 lblProjectName.setText("");

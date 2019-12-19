@@ -1,7 +1,6 @@
 package com.cleanup.todoc.ui;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -26,9 +25,7 @@ import com.cleanup.todoc.R;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -43,8 +40,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * List of all projects available in the application
      */
-    //private final Project[] allProjects = Project.getAllProjects();
     private List<Project> allProjects = new ArrayList<>();
+
 
     /**
      * For data
@@ -55,7 +52,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * List of all current tasks of the application
      */
     @NonNull
-    private final ArrayList<Task> tasks = new ArrayList<>();
+    private  List<Task> tasks = new ArrayList<>();
+    // private final ArrayList<Task> tasks = getTasks();
     //TODO BD READ
     /**
      * The adapter which handles the list of tasks
@@ -103,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     private TextView lblNoTasks;
 
     private ItemViewModel itemViewModel;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,14 +124,11 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             }
         });
 
-        //Configure ViewModel
         configureViewModel();
 
-        //get all project in the database
-        this.getAllProject();
+        getAllProject();
 
-        //Get current Project & items from Database
-        this.getItems(PROJECT_ID);
+        getTasks();
 
 
 
@@ -166,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     //TODO onDeleteTask
     @Override
     public void onDeleteTask(Task task) {
-       // tasks.remove(task);
+        // tasks.remove(task);
         this.itemViewModel.deleteTask(task.getId());
         updateTasks();
     }
@@ -183,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             String taskName = dialogEditText.getText().toString();
 
             // Get the selected project to be associated to the task
+            //TODO
             Project taskProject = null;
             if (dialogSpinner.getSelectedItem() instanceof Project) {
                 taskProject = (Project) dialogSpinner.getSelectedItem();
@@ -195,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             // If both project and name of the task have been set
             else if (taskProject != null) {
                 // TODO: Replace this by id of persisted task
-               // long id = (long) (Math.random() * 50000);
+                // long id = (long) (Math.random() * 50000);
 
 
                 Task task = new Task(
@@ -203,9 +200,11 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                         taskName,
                         new Date().getTime()
                 );
+
                 //TODO onPositiveButtonClick addTask(task)
                 addTask(task);
 
+                getTasks();
 
                 dialogInterface.dismiss();
             }
@@ -272,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                     break;
 
             }
-            adapter.updateTasks(tasks);
+            adapter.updateTasks(allProjects, tasks);
         }
     }
 
@@ -356,43 +355,38 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         NONE
     }
 
-    //Configuring ViewModel
+    /**
+     * Configuring the ViewModel
+     */
     private void configureViewModel(){
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         this.itemViewModel = ViewModelProviders.of(this, viewModelFactory).get(ItemViewModel.class);
-        this.itemViewModel.init(PROJECT_ID);
-
+        this.itemViewModel.init();
     }
 
-    public void getItems(final long projectId){
-        this.itemViewModel.getTask(projectId).observe(this, new Observer<List<Task>>() {
+    /**
+     *  Get the task of the project
+     */
+    public void getTasks(){
+        this.itemViewModel.getTasks().observe(this, new Observer<List<Task>>() {
             @Override
             public void onChanged(@Nullable List<Task> pTasks) {
-                adapter.updateTasks(pTasks);
+                tasks = pTasks;
+                updateTasks();
             }
         });
     }
 
-    //Get all project in the database
+    /**
+     * Get all project in the database
+     * If there are no projects in the database, we add any
+     */
     public void getAllProject(){
+
         this.itemViewModel.getAllProject().observe(this, new Observer<List<Project>>() {
             @Override
             public void onChanged(@Nullable List<Project> pProjects) {
                 allProjects = pProjects;
-            }
-        });
-
-        if(allProjects.isEmpty())
-            //Insert project in database
-            this.addProjects();
-
-    }
-
-    public void currentProject(final long projectId){
-        itemViewModel.getProject(projectId).observe(this, new Observer<Project>() {
-            @Override
-            public void onChanged(@Nullable Project pProject) {
-
             }
         });
     }

@@ -12,8 +12,8 @@ import java.util.List;
 public interface TaskDao {
 
 
-    @Query("SELECT * FROM Task WHERE ProjectId = :projectId")
-    LiveData<List<Task>> getTask(long projectId);
+    @Query("SELECT * FROM Task")
+    LiveData<List<Task>> getTasks();
 
     // allowing the insert of the same word multiple times by passing a
     // conflict resolution strategy

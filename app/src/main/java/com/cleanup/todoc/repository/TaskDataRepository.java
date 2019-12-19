@@ -17,11 +17,10 @@ public class TaskDataRepository {
 
     /**  Returns the project with the given unique identifier
      *
-     * @param projectId id the unique identifier of the tasks to return
      *
      * @return the project with the given unique identifier
      */
-    public LiveData<List<Task>> getTask(long projectId){ return taskDao.getTask(projectId); }
+    public LiveData<List<Task>> getTasks(){ return taskDao.getTasks(); }
 
     /** Add the task given
      *

@@ -19,7 +19,7 @@ public class ItemViewModel extends ViewModel {
     private final Executor executor;
 
     //DATA
-    private LiveData<Project> currrentProject;
+    private LiveData<List<Task>> currrentTasks;
 
     public ItemViewModel(TaskDataRepository pItemDataSource, ProjectDataRepository pProjectDataSource, Executor pExecutor) {
         this.itemDataSource = pItemDataSource;
@@ -27,16 +27,13 @@ public class ItemViewModel extends ViewModel {
         this.executor = pExecutor;
     }
 
-    public void init(long projectId){
-        if(this.currrentProject != null){
+    public void init(){
+        if(this.currrentTasks != null){
             return;
         }
 
-        currrentProject = projectDataSource.getProject(projectId);
+        currrentTasks = itemDataSource.getTasks();
     }
-
-    //FOR PROJECT
-    public LiveData<Project> getProject(long projectId){ return this.currrentProject; }
 
     //FOR PROJECT
     public LiveData<List<Project>>getAllProject(){ return this.projectDataSource.getAllProject(); }
@@ -73,6 +70,6 @@ public class ItemViewModel extends ViewModel {
     }
 
     //FOR TASK
-    public LiveData<List<Task>> getTask(long projectId){ return itemDataSource.getTask(projectId); }
+    public LiveData<List<Task>> getTasks(){ return itemDataSource.getTasks(); }
 
 }
