@@ -15,8 +15,10 @@ import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 
 import java.util.Date;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
-    @Database(entities = {Task.class, Project.class}, version = 1, exportSchema = false)
+@Database(entities = {Task.class, Project.class}, version = 1, exportSchema = false)
     public abstract class TodocDataBase extends RoomDatabase {
 
         //--- SINGLETON ---
@@ -33,28 +35,31 @@ import java.util.Date;
                     if (INSTANCE == null) {
                         INSTANCE = Room.databaseBuilder(pContext.getApplicationContext(),
                                 TodocDataBase.class, "MyDataBase")
-                                //.addCallback(prepopulateDatabase())
+                                .addCallback(new Callback() {
+                                    @Override
+                                    public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                                       // super.onCreate(db);
+                                        Executors.newSingleThreadExecutor().execute(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                INSTANCE.ProjectDao().
+                                                        createProject(new Project(1L, "Projet Tartampion",
+                                                                0xFFEADAD1));
+                                                INSTANCE.ProjectDao().
+                                                        createProject(new Project(2L, "Projet Lucidia",
+                                                                0xFFB4CDBA));
+                                                INSTANCE.ProjectDao().
+                                                        createProject(new Project(3L, "Projet Circus",
+                                                                0xFFA3CED2));
+                                            }
+                                        });
+                                    }
+                                })
                                 .build();
                     }
                 }
             }
             return INSTANCE;
         }
-
-        private static Callback prepopulateDatabase() {
-            return new Callback() {
-                @Override
-                public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                    super.onCreate(db);
-                    ContentValues contentValues = new ContentValues();
-                    contentValues.put("id", 1L);
-                    contentValues.put("name", "Tartampion");
-                    contentValues.put("color", 0xFFEADAD1);
-                    db.insert("Project", OnConflictStrategy.REPLACE, contentValues);
-                }
-            };
-
-        }
-
     }
 

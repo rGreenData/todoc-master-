@@ -21,7 +21,6 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         this.executor = pExecutor;
     }
 
-
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {

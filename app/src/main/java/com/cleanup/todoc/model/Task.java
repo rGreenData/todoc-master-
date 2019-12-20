@@ -15,9 +15,9 @@ import java.util.Comparator;
  *
  * @author Gaëtan HERFRAY
  */
-@Entity(foreignKeys = @ForeignKey(entity = Project.class,
+@Entity(tableName = "task", foreignKeys = @ForeignKey(entity = Project.class,
         parentColumns = "id",
-        childColumns = "projectId"))
+        childColumns = "project_id"))
 
 public class Task {
     /**
@@ -30,6 +30,7 @@ public class Task {
     /**
      * The unique identifier of the project associated to the task
      */
+    @ColumnInfo(name = "project_id")
     private long projectId;
 
     public long getProjectId() {
@@ -39,8 +40,6 @@ public class Task {
     /**
      * The name of the task
      */
-    // Suppress warning because setName is called in constructor
-    @SuppressWarnings("NullableProblems")
     @NonNull
     private String name;
 
@@ -91,16 +90,6 @@ public class Task {
      */
     public void setProjectId(long projectId) {
         this.projectId = projectId;
-    }
-
-    /**
-     * Returns the project associated to the task.
-     *
-     * @return the project associated to the task
-     */
-    @Nullable
-    public Project getProject() {
-        return Project.getProjectById(projectId);
     }
 
     /**
