@@ -3,15 +3,15 @@ skinparam classAttributeIconSize 0
 
 class MainActivity extends AppCompatActivity implements DeleteTaskListener {
 
-    - Project[] allProjects {readOnly}
-    - ArrayList<Task> tasks {readOnly}
+    - Project[] allProjects
+    - ArrayList<Task> tasks
     - TasksAdapter adapter {readOnly}
     - SortMethod sortMethod
     + AlertDialog dialog
     - Spinner dialogSpinner
     - RecyclerView listTasks
 
-    - onPositiveButtonClick(DialogInterface)
+    - onPositiveButtonClick(DialogInterface dialogInterface)
     - showAddTaskDialog()
     - addTask(Task task)
     - updateTasks()
@@ -22,8 +22,12 @@ class MainActivity extends AppCompatActivity implements DeleteTaskListener {
                               RECENT_FIRST,
                               OLD_FIRST,
                               NONE}
+    - configureViewModel()
+    - getTasks()
+    - getAllProject()
 }
-
+MainActivity "1" -down-> "0..*" Task
+MainActivity "1" -down-> "1" Injection
 
 class Task {
     - long id;
@@ -33,12 +37,11 @@ class Task {
 
     + Task(long, long, String, long)
     + long getId() id;
-    - setId(long id) void
-    - setProjectId(long projectId) void
-    + Project getProject() Project.getProjectById(projectId);
-    + String getName() name
-    - setName(String) void
-    - setCreationTimestamp(long) void
+    - setId(long)
+    - setProjectId(long)
+    + getName() :String
+    - setName(String)
+    - setCreationTimestamp(long)
 }
 
  class TaskAZComparator <<static>> implements Comparator {
@@ -60,23 +63,20 @@ class TaskRecentComparator <<static>> implements Comparator {
     }
 
 class Project {
-    -long id {readOnly}
-    -String name {readOnly}
-    -int color {readOnly}
+    -long id
+    -String name
+    -int color
 
-    -Project(long ,  String , int)
-    +{static} Project[] getAllProjects() Project[]
-    +{static} Project getProjectById(long id) Project
-    +long getId() id
-    +String getName() name
-    +int getColor() color
-    +String toString() getName
+    -Project(long, String, int)
+    +lgetId() :Long
+    +getName() :String
+    + getColor() :int
     }
 
 class TasksAdapter extends RecyclerView.Adapter{
     private List<Task> tasks;
     private final DeleteTaskListener deleteTaskListener;
-    TasksAdapter(@NonNull final List<Task> tasks, @NonNull final DeleteTaskListener deleteTaskListener)
+    TasksAdapter(final List<Task> tasks, final DeleteTaskListener deleteTaskListener)
     void updateTasks(@NonNull final List<Task> tasks)
     public interface DeleteTaskListener
     bind(Task task) void
@@ -94,6 +94,64 @@ class TaskViewHolder extends RecyclerView.ViewHolder {
 interface DeleteTaskListener {
             void onDeleteTask(Task task);
         }
+
+class TodocDataBase <<abstract>> extends RoomDatabase {
+        -static volatile TodocDataBase INSTANCE;
+        + static TodocDataBase getInstance(Context) : TodocDataBase
+    }
+TaskDao "1" <-down- "1" TodocDataBase
+ProjectDao "1" <-down- "1" TodocDataBase
+Project "1...*" <-down- "1" TodocDataBase
+
+interface TaskDao {
+    +LiveData<List<Task>> getTasks();
+    +long insertTask(Task);
+    +int deleteTask(long );
+}
+
+
+interface ProjectDao {
+   +LiveData<List<Project>> getAllProject();
+   +long createProject(Project);
+}
+
+class ViewModelFactory implements ViewModelProvider.Factory {
+
+    private final ProjectDataRepository projectDataSource;
+    private final TaskDataRepository taskDataSource;
+    private final Executor executor;
+
+    public ViewModelFactory(TaskDataRepository, ProjectDataRepository, Executor)
+    }
+Injection "1" -down-> "1" ViewModelFactory
+ViewModelFactory "1" -down-> "1" TaskDataRepository
+ViewModelFactory "1" -down-> "1" ProjectDataRepository
+
+class Injection <<static>> {
++static ProjectDataRepository provideProjectDataSource(Context context) :ProjectDataRepository(dataBase.ProjectDao());
+TaskDataRepository provideTaskDataSOurce(Context context) :TaskDataRepository(dataBase.taskDao());
++static Executor provideExecutor() :Executors.newSingleThreadExecutor()
++static ViewModelFactory provideViewModelFactory(Context context) :ViewModelFactory(dataSourceTask, dataSourceProject, executor);
+}
+
+
+class ProjectDataRepository {
+    -ProjectDao projectDao {readOnly}
+    +ProjectDataRepository(ProjectDao pProjectDao)
+
+    public LiveData<List<Project>> getAllProject() :LiveData<List<Project>>
+
+}
+
+
+class TaskDataRepository {
+    -TaskDao taskDao {readOnly}
+
+    +TaskDataRepository(TaskDao pTaskDao)
+    +LiveData<List<Task>> getTasks() :LiveData<List<Task>>
+    +void addTask(Task pTask)
+    +void deleteTask(long taskId)
+}
 
 
 TasksAdapter +-- DeleteTaskListener

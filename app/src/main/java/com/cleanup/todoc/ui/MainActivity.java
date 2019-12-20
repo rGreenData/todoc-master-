@@ -39,15 +39,11 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * List of all projects available in the application
      */
     private List<Project> allProjects = new ArrayList<>();
-
-
     /**
      * List of all current tasks of the application
      */
     @NonNull
-    private  List<Task> tasks = new ArrayList<>();
-    // private final ArrayList<Task> tasks = getTasks();
-    //TODO BD READ
+    private List<Task> tasks = new ArrayList<>();
     /**
      * The adapter which handles the list of tasks
      */
@@ -117,11 +113,16 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             }
         });
 
+        // Configure and initialize the ViewModel
         configureViewModel();
 
+        // Get all the projects
         getAllProject();
 
+        //get all the tasks in the database
         getTasks();
+
+
     }
 
     @Override
@@ -169,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             String taskName = dialogEditText.getText().toString();
 
             // Get the selected project to be associated to the task
-            //TODO
             Project taskProject = null;
             if (dialogSpinner.getSelectedItem() instanceof Project) {
                 taskProject = (Project) dialogSpinner.getSelectedItem();
@@ -223,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      *
      * @param task the task to be added to the list
      */
-    //TODO addTask
     private void addTask(@NonNull Task task) {
         itemViewModel.addTask(task);
         updateTasks();
@@ -232,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * Updates the list of tasks in the UI
      */
-    //TODO updateTask
     private void updateTasks() {
         if (tasks.size() == 0) {
             lblNoTasks.setVisibility(View.VISIBLE);
@@ -253,7 +251,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                 case OLD_FIRST:
                     Collections.sort(tasks, new Task.TaskOldComparator());
                     break;
-
             }
             adapter.updateTasks(allProjects, tasks);
         }
@@ -351,25 +348,28 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      *  Get the task of the project
      */
-    public void getTasks(){
+    private void getTasks(){
         this.itemViewModel.getTasks().observe(this, new Observer<List<Task>>() {
+
             @Override
             public void onChanged(@Nullable List<Task> pTasks) {
                 tasks = pTasks;
                 updateTasks();
             }
         });
+
     }
 
     /**
      * Get all project in the database
      * If there are no projects in the database, we add any
      */
-    public void getAllProject(){
+    private void getAllProject(){
         this.itemViewModel.getAllProject().observe(this, new Observer<List<Project>>() {
             @Override
             public void onChanged(@Nullable List<Project> pProjects) {
                 allProjects = pProjects;
+                updateTasks();
             }
         });
     }

@@ -13,38 +13,28 @@ import java.util.concurrent.Executor;
 public class ItemViewModel extends ViewModel {
 
     //REPOSITORIES
-    private final TaskDataRepository itemDataSource;
+    private final TaskDataRepository taskDataSource;
     private final ProjectDataRepository projectDataSource;
     private final Executor executor;
 
     //DATA
-    private LiveData<List<Task>> currrentTasks;
+    private LiveData<List<Task>> currentTasks;
 
     public ItemViewModel(TaskDataRepository pItemDataSource, ProjectDataRepository pProjectDataSource, Executor pExecutor) {
-        this.itemDataSource = pItemDataSource;
+        this.taskDataSource = pItemDataSource;
         this.projectDataSource = pProjectDataSource;
         this.executor = pExecutor;
     }
 
     public void init(){
-        if(this.currrentTasks != null){
+        if(this.currentTasks != null){
             return;
         }
-
-        currrentTasks = itemDataSource.getTasks();
+        currentTasks = taskDataSource.getTasks();
     }
 
     //FOR PROJECT
     public LiveData<List<Project>>getAllProject(){ return this.projectDataSource.getAllProject(); }
-
-    //FOR PROJECT
-    public void addProject(final Project  project){ executor.execute(new Runnable() {
-        @Override
-        public void run() {
-            projectDataSource.addProject(project);
-        }
-    });
-    }
 
     //FOR TASK
     public void  addTask(final Task pTask){
@@ -52,7 +42,7 @@ public class ItemViewModel extends ViewModel {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                itemDataSource.addTask(pTask);
+                taskDataSource.addTask(pTask);
             }
         });
     }
@@ -63,12 +53,12 @@ public class ItemViewModel extends ViewModel {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                itemDataSource.deleteTask(id);
+                taskDataSource.deleteTask(id);
             }
         });
     }
 
     //FOR TASK
-    public LiveData<List<Task>> getTasks(){ return itemDataSource.getTasks(); }
+    public LiveData<List<Task>> getTasks(){ return taskDataSource.getTasks(); }
 
 }

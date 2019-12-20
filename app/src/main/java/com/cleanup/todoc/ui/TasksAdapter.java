@@ -155,9 +155,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         void bind(Task task) {
             lblTaskName.setText(task.getName());
             imgDelete.setTag(task);
-            //TODO
-            //final Project taskProject = task.getProject();
-
             if (taskProject != null) {
 
                 for (int i = 0; i < taskProject.size(); i++) {
