@@ -1,0 +1,16 @@
+@startuml
+User -> (Start)
+
+top to bottom direction
+
+skinparam packageStyle rectangle
+Rectangle System {
+left to right direction
+User --> (Lister les tâches des projets)
+User --> (Ajouter une tâche)
+
+(Ajouter une tâche).> (Choisir un projet):include
+(Ajouter une tâche).> (Saisir une tâche):include
+
+}
+@enduml

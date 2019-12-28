@@ -12,19 +12,19 @@ class MainActivity extends AppCompatActivity implements DeleteTaskListener {
     - RecyclerView listTasks
 
     - onPositiveButtonClick(DialogInterface dialogInterface)
-    - showAddTaskDialog()
-    - addTask(Task task)
-    - updateTasks()
-    - AlertDialog getAddTaskDialog()
-    - populateDialogSpinner()
+    - showAddTaskDialog() void
+    - addTask(Task task) void
+    - updateTasks() void
+    - AlertDialog getAddTaskDialog() void
+    - populateDialogSpinner() void
     - enum SortMethod{ALPHABETICAL,
                               ALPHABETICAL_INVERTED,
                               RECENT_FIRST,
                               OLD_FIRST,
                               NONE}
-    - configureViewModel()
-    - getTasks()
-    - getAllProject()
+    - configureViewModel() void
+    - getTasks() void
+    - getAllProject() void
 }
 MainActivity "1" -down-> "0..*" Task
 MainActivity "1" -down-> "1" Injection
@@ -70,16 +70,20 @@ class Project {
     -Project(long, String, int)
     +lgetId() :Long
     +getName() :String
-    + getColor() :int
+    +getColor() :int
     }
 
 class TasksAdapter extends RecyclerView.Adapter{
-    private List<Task> tasks;
-    private final DeleteTaskListener deleteTaskListener;
-    TasksAdapter(final List<Task> tasks, final DeleteTaskListener deleteTaskListener)
-    void updateTasks(@NonNull final List<Task> tasks)
-    public interface DeleteTaskListener
+    -List<Task> tasks;
+    -DeleteTaskListener deleteTaskListener {readOnly}
+    TasksAdapter(List<Task> tasks, DeleteTaskListener deleteTaskListener)
+    updateTasks(List<Task> tasks) void
+
     bind(Task task) void
+}
+
+interface DeleteTaskListener{
+onDeleteTask(Task task) void
 }
 
 class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -91,13 +95,9 @@ class TaskViewHolder extends RecyclerView.ViewHolder {
           TaskViewHolder(View, DeleteTaskListener)
     }
 
-interface DeleteTaskListener {
-            void onDeleteTask(Task task);
-        }
-
 class TodocDataBase <<abstract>> extends RoomDatabase {
         -static volatile TodocDataBase INSTANCE;
-        + static TodocDataBase getInstance(Context) : TodocDataBase
+        +static TodocDataBase getInstance(Context) : TodocDataBase
     }
 TaskDao "1" <-down- "1" TodocDataBase
 ProjectDao "1" <-down- "1" TodocDataBase
@@ -149,8 +149,8 @@ class TaskDataRepository {
 
     +TaskDataRepository(TaskDao pTaskDao)
     +LiveData<List<Task>> getTasks() :LiveData<List<Task>>
-    +void addTask(Task pTask)
-    +void deleteTask(long taskId)
+    +addTask(Task pTask) void
+    +deleteTask(long taskId) void
 }
 
 
@@ -158,5 +158,5 @@ TasksAdapter +-- DeleteTaskListener
 TasksAdapter +-- TaskViewHolder
 Task +-- TaskAZComparator
 Task +-- TaskRecentComparator
-Task +-- TaskOldComparator
+Task +-d- TaskOldComparator
 @enduml

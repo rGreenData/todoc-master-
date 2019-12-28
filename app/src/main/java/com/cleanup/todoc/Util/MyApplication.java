@@ -10,6 +10,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        /*
         // Create an InitializerBuilder
         Stetho.InitializerBuilder initializerBuilder = Stetho.newInitializerBuilder(this);
 
@@ -25,5 +26,8 @@ public class MyApplication extends Application {
 
         // Initialize Stetho with the Initializer
         Stetho.initialize(initializer);
+
+         */
+        Stetho.initializeWithDefaults(this);
     }
 }
