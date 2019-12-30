@@ -1,15 +1,15 @@
 @startuml
-object project
-project : id
-project : name
-project : color
+object projects
+projects : id
+projects : name
+projects : color
 
 
-object task
-task : id
-task : user_id
-task : name
-task : date
+object tasks
+tasks : id
+tasks : user_id
+tasks : name
+tasks : date
 
-project "1" --- "1..*"  task
+projects "1" --- "1..*"  tasks
 @enduml

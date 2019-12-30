@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 
 import java.util.Comparator;
 
+import static com.cleanup.todoc.model.Project.getAllProjects;
+
 /**
  * <p>Model for the tasks of the application.</p>
  *
@@ -81,6 +83,16 @@ public class Task {
      */
     public void setId(long id) {
         this.id = id;
+    }
+
+    /**
+     * Returns the project associated to the task.
+     *
+     * @return the project associated to the task
+     */
+    @Nullable
+    public Project getProject() {
+        return Project.getProjectById(projectId);
     }
 
     /**

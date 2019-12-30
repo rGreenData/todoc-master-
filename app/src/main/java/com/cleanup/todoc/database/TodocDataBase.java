@@ -35,31 +35,32 @@ import java.util.concurrent.Executors;
                     if (INSTANCE == null) {
                         INSTANCE = Room.databaseBuilder(pContext.getApplicationContext(),
                                 TodocDataBase.class, "MyDataBase")
-                                .addCallback(new Callback() {
-                                    @Override
-                                    public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                                       // super.onCreate(db);
-                                        Executors.newSingleThreadExecutor().execute(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                INSTANCE.ProjectDao().
-                                                        createProject(new Project(1L, "Projet Tartampion",
-                                                                0xFFEADAD1));
-                                                INSTANCE.ProjectDao().
-                                                        createProject(new Project(2L, "Projet Lucidia",
-                                                                0xFFB4CDBA));
-                                                INSTANCE.ProjectDao().
-                                                        createProject(new Project(3L, "Projet Circus",
-                                                                0xFFA3CED2));
-                                            }
-                                        });
-                                    }
-                                })
+                                .addCallback(prepopulateDatabase())
                                 .build();
                     }
                 }
             }
             return INSTANCE;
         }
+
+    private static Callback prepopulateDatabase(){
+            return new Callback() {
+                @Override
+                public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                    super.onCreate(db);
+                    Project[] projects = Project.getAllProjects();
+                    for (Project project: projects) {
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put("id",project.getId());
+                        contentValues.put("name",project.getName());
+                        contentValues.put("color",project.getColor());
+                        db.insert("Project", OnConflictStrategy.REPLACE, contentValues);
+                    }
+
+                }
+            };
+
+    }
+
     }
 

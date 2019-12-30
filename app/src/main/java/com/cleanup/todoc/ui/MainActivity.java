@@ -39,15 +39,11 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * List of all projects available in the application
      */
     private List<Project> allProjects = new ArrayList<>();
-    /**
-     * List of all current tasks of the application
-     */
-    @NonNull
-    private List<Task> tasks = new ArrayList<>();
+
     /**
      * The adapter which handles the list of tasks
      */
-    private final TasksAdapter adapter = new TasksAdapter(tasks, this);
+    private final TasksAdapter adapter = new TasksAdapter(this);
 
     /**
      * The sort method to be used to display tasks
@@ -145,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             sortMethod = SortMethod.RECENT_FIRST;
         }
 
-        updateTasks();
+        getTasks();
 
         return super.onOptionsItemSelected(item);
     }
@@ -155,7 +151,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     public void onDeleteTask(Task task) {
         // tasks.remove(task);
         this.itemViewModel.deleteTask(task.getId());
-        updateTasks();
     }
 
     /**
@@ -225,13 +220,12 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      */
     private void addTask(@NonNull Task task) {
         itemViewModel.addTask(task);
-        updateTasks();
     }
 
     /**
      * Updates the list of tasks in the UI
      */
-    private void updateTasks() {
+    private void updateTasks(List<Task> tasks) {
         if (tasks.size() == 0) {
             lblNoTasks.setVisibility(View.VISIBLE);
             listTasks.setVisibility(View.GONE);
@@ -353,8 +347,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
             @Override
             public void onChanged(@Nullable List<Task> pTasks) {
-                tasks = pTasks;
-                updateTasks();
+                updateTasks(pTasks);
             }
         });
 
@@ -369,7 +362,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             @Override
             public void onChanged(@Nullable List<Project> pProjects) {
                 allProjects = pProjects;
-                updateTasks();
             }
         });
     }

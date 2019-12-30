@@ -21,6 +21,4 @@ public class ProjectDataRepository {
 
         return this.projectDao.getAllProject();
     }
-
-    public void addProject(Project project){ this.projectDao.createProject(project); }
 }
