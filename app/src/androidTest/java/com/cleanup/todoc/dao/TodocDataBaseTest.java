@@ -14,6 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.util.Date;
 import java.util.List;
+
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
 
@@ -64,6 +66,10 @@ public class TodocDataBaseTest {
          List<Project> project = null;
          project = LiveDataTestUtil.getValue(this.database.ProjectDao().getAllProject());
 
+        assertEquals(project.get(0).getName(),"Built a wall");
+        assertEquals(project.get(1).getName(),"Association");
+        assertEquals(project.get(2).getName(),"Renovation");
+
         assertTrue(project.size() == 3);
     }
 
@@ -92,6 +98,7 @@ public class TodocDataBaseTest {
 
 
         assertTrue(taskList.size() == 3);
+        assertEquals(taskList.get(1).getName(),"File documents" );
     }
 
     @Test

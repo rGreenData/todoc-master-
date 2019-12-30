@@ -35,9 +35,7 @@ public class Task {
     @ColumnInfo(name = "project_id")
     private long projectId;
 
-    public long getProjectId() {
-        return projectId;
-    }
+
 
     /**
      * The name of the task
@@ -49,10 +47,6 @@ public class Task {
      * The timestamp when the task has been created
      */
     private long creationTimestamp;
-
-    public long getCreationTimestamp() {
-        return creationTimestamp;
-    }
 
     /**
      * Instantiates a new Task.
@@ -95,6 +89,14 @@ public class Task {
         return Project.getProjectById(projectId);
     }
 
+    /** Returns the id associated to the project.
+     *
+     * @return the id associated to the project.
+     */
+    public long getProjectId() {
+        return projectId;
+    }
+
     /**
      * Sets the unique identifier of the project associated to the task.
      *
@@ -121,6 +123,16 @@ public class Task {
      */
     public void setName(@NonNull String name) {
         this.name = name;
+    }
+
+    /**
+     *
+     * Get the timestamp of the task.
+     *
+     * @return the timestamp of the task.
+     */
+    public long getCreationTimestamp() {
+        return creationTimestamp;
     }
 
     /**

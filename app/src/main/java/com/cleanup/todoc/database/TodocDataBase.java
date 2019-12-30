@@ -43,6 +43,9 @@ import java.util.concurrent.Executors;
             return INSTANCE;
         }
 
+    /** Prepopulate the data base with projects from project class
+     * @return
+     */
     private static Callback prepopulateDatabase(){
             return new Callback() {
                 @Override
@@ -54,12 +57,10 @@ import java.util.concurrent.Executors;
                         contentValues.put("id",project.getId());
                         contentValues.put("name",project.getName());
                         contentValues.put("color",project.getColor());
-                        db.insert("Project", OnConflictStrategy.REPLACE, contentValues);
+                        db.insert("project", OnConflictStrategy.IGNORE, contentValues);
                     }
-
                 }
             };
-
     }
 
     }

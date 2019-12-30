@@ -12,7 +12,7 @@ import java.util.List;
 @Dao
 public interface ProjectDao {
 
-    @Query("SELECT * FROM Project")
+    @Query("SELECT * FROM project")
     LiveData<List<Project>> getAllProject();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

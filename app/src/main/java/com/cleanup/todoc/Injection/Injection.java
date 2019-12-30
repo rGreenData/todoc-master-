@@ -16,7 +16,7 @@ public static ProjectDataRepository provideProjectDataSource(Context context){
     return new ProjectDataRepository(dataBase.ProjectDao());
 }
 
-public static TaskDataRepository provideTaskDataSOurce(Context context){
+public static TaskDataRepository provideTaskDataSource(Context context){
 
     TodocDataBase dataBase = TodocDataBase.getInstance(context);
 
@@ -26,7 +26,7 @@ public static TaskDataRepository provideTaskDataSOurce(Context context){
 public static Executor provideExecutor(){ return Executors.newSingleThreadExecutor();}
 
 public static ViewModelFactory provideViewModelFactory(Context context){
-    TaskDataRepository dataSourceTask = provideTaskDataSOurce(context);
+    TaskDataRepository dataSourceTask = provideTaskDataSource(context);
     ProjectDataRepository dataSourceProject = provideProjectDataSource(context);
     Executor executor = provideExecutor();
 

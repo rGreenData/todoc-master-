@@ -38,7 +38,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * List of all projects available in the application
      */
-    private List<Project> allProjects = new ArrayList<>();
+    private List<Project> allProjects;
+
+    private List<Task> tasks ;
 
     /**
      * The adapter which handles the list of tasks
@@ -98,6 +100,10 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         //Initialize the TextView with a message
         lblNoTasks = findViewById(R.id.lbl_no_task);
 
+        allProjects = new ArrayList<>();
+
+        tasks = new ArrayList<>();
+
         listTasks.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         listTasks.setAdapter(adapter);
@@ -117,8 +123,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
         //get all the tasks in the database
         getTasks();
-
-
     }
 
     @Override
@@ -146,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO onDeleteTask
     @Override
     public void onDeleteTask(Task task) {
         // tasks.remove(task);
@@ -225,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * Updates the list of tasks in the UI
      */
-    private void updateTasks(List<Task> tasks) {
+    private void updateTasks() {
         if (tasks.size() == 0) {
             lblNoTasks.setVisibility(View.VISIBLE);
             listTasks.setVisibility(View.GONE);
@@ -340,14 +343,14 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     }
 
     /**
-     *  Get the task of the project
+     *  Get the tasks of the project
      */
     private void getTasks(){
         this.itemViewModel.getTasks().observe(this, new Observer<List<Task>>() {
-
             @Override
             public void onChanged(@Nullable List<Task> pTasks) {
-                updateTasks(pTasks);
+                tasks = pTasks;
+                updateTasks();
             }
         });
 
@@ -355,13 +358,13 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     /**
      * Get all project in the database
-     * If there are no projects in the database, we add any
      */
     private void getAllProject(){
         this.itemViewModel.getAllProject().observe(this, new Observer<List<Project>>() {
             @Override
             public void onChanged(@Nullable List<Project> pProjects) {
                 allProjects = pProjects;
+                updateTasks();
             }
         });
     }

@@ -4,14 +4,16 @@ skinparam classAttributeIconSize 0
 class MainActivity extends AppCompatActivity implements DeleteTaskListener {
 
     - Project[] allProjects
-    - ArrayList<Task> tasks
+    - Task[] tasks
     - TasksAdapter adapter {readOnly}
     - SortMethod sortMethod
     + AlertDialog dialog
+    - EditText dialogEditText
     - Spinner dialogSpinner
     - RecyclerView listTasks
+    - ItemViewModel itemViewModel
 
-    - onPositiveButtonClick(DialogInterface dialogInterface)
+    - onPositiveButtonClick(DialogInterface dialogInterface) void
     - showAddTaskDialog() void
     - addTask(Task task) void
     - updateTasks() void
@@ -31,35 +33,38 @@ MainActivity "1" -down-> "1" Injection
 
 class Task {
     - long id;
-    - long projectId;
+    - long projectId
     - String name;
     - long creationTimestamp;
 
-    + Task(long, long, String, long)
-    + long getId() id;
-    - setId(long)
-    - setProjectId(long)
+    + Task(long, String, long)
+    + getProjectId() : projectId
+    + long getId() :id
+    + setId(long)
+    + setProjectId(long) void
+    + getProject() :Project.getProjectById(long)
+    + getProjectId() :long
     + getName() :String
-    - setName(String)
-    - setCreationTimestamp(long)
+    + setName(String) void
+    + getCreationTimestamp() :long
+    - setCreationTimestamp(long) void
 }
 
- class TaskAZComparator <<static>> implements Comparator {
-        + int compare(Task left, Task right)
-        right.name.compareTo(left.name);
+Task  +-- "2" TaskAZComparator
+Task +-- TaskRecentComparator
+Task +-d- TaskOldComparator
 
+
+class TaskAZComparator <<static>> implements Comparator {
+        + compare(Task left, Task right) :int
     }
 
 class TaskRecentComparator <<static>> implements Comparator {
-        + int compare(Task left, Task right)
-           (right.creationTimestamp - left.creationTimestamp)
-
+        + compare(Task left, Task right) :int
     }
 
  class TaskOldComparator <<static>> implements Comparator{
-        + int compare(Task left, Task right)
-            (left.creationTimestamp - right.creationTimestamp)
-
+        + compare(Task left, Task right) :int
     }
 
 class Project {
@@ -68,22 +73,27 @@ class Project {
     -int color
 
     -Project(long, String, int)
-    +lgetId() :Long
+    +getId() :Long
     +getName() :String
     +getColor() :int
+    +static Project[] getAllProjects() :Project[]
+    +static Project getProjectById(long) :Project
+    +setId(long) void
+    +setName(String) void
+    +String toString() :getName()
     }
 
 class TasksAdapter extends RecyclerView.Adapter{
-    -List<Task> tasks;
+    -Task[] tasks
+    -Project[] taskProject
     -DeleteTaskListener deleteTaskListener {readOnly}
-    TasksAdapter(List<Task> tasks, DeleteTaskListener deleteTaskListener)
-    updateTasks(List<Task> tasks) void
-
-    bind(Task task) void
+    TasksAdapter(DeleteTaskListener)
+    updateTasks(Project[], Task[]) void
+    bind(Task) void
 }
 
 interface DeleteTaskListener{
-onDeleteTask(Task task) void
+onDeleteTask(Task) void
 }
 
 class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -97,66 +107,74 @@ class TaskViewHolder extends RecyclerView.ViewHolder {
 
 class TodocDataBase <<abstract>> extends RoomDatabase {
         -static volatile TodocDataBase INSTANCE;
-        +static TodocDataBase getInstance(Context) : TodocDataBase
+        +static TodocDataBase getInstance(Context) :INSTANCE
+        + static Callback prepopulateDatabase()
     }
 TaskDao "1" <-down- "1" TodocDataBase
 ProjectDao "1" <-down- "1" TodocDataBase
-Project "1...*" <-down- "1" TodocDataBase
+
 
 interface TaskDao {
-    +LiveData<List<Task>> getTasks();
-    +long insertTask(Task);
-    +int deleteTask(long );
+    +LiveData [Task] getTasks()
+    +long insertTask(Task) void
+    +int deleteTask(long ) void
 }
 
 
 interface ProjectDao {
-   +LiveData<List<Project>> getAllProject();
-   +long createProject(Project);
+   +LiveData [Project] getAllProject() :Project[]
+   +long createProject(Project) void
 }
 
 class ViewModelFactory implements ViewModelProvider.Factory {
-
-    private final ProjectDataRepository projectDataSource;
-    private final TaskDataRepository taskDataSource;
-    private final Executor executor;
-
+    private final Executor executor
     public ViewModelFactory(TaskDataRepository, ProjectDataRepository, Executor)
-    }
+ }
+
 Injection "1" -down-> "1" ViewModelFactory
 ViewModelFactory "1" -down-> "1" TaskDataRepository
 ViewModelFactory "1" -down-> "1" ProjectDataRepository
 
 class Injection <<static>> {
-+static ProjectDataRepository provideProjectDataSource(Context context) :ProjectDataRepository(dataBase.ProjectDao());
-TaskDataRepository provideTaskDataSOurce(Context context) :TaskDataRepository(dataBase.taskDao());
++static ProjectDataRepository provideProjectDataSource(Context) :ProjectDataRepository(dataBase.ProjectDao())
++TaskDataRepository provideTaskDataSource(Context) :TaskDataRepository(dataBase.taskDao());
 +static Executor provideExecutor() :Executors.newSingleThreadExecutor()
-+static ViewModelFactory provideViewModelFactory(Context context) :ViewModelFactory(dataSourceTask, dataSourceProject, executor);
++static ViewModelFactory provideViewModelFactory(Context) :ViewModelFactory(dataSourceTask, dataSourceProject, executor)
 }
 
 
 class ProjectDataRepository {
     -ProjectDao projectDao {readOnly}
-    +ProjectDataRepository(ProjectDao pProjectDao)
-
-    public LiveData<List<Project>> getAllProject() :LiveData<List<Project>>
-
+    +ProjectDataRepository(ProjectDao)
+    + getAllProject() :LiveData Project[]
 }
 
 
 class TaskDataRepository {
     -TaskDao taskDao {readOnly}
 
-    +TaskDataRepository(TaskDao pTaskDao)
-    +LiveData<List<Task>> getTasks() :LiveData<List<Task>>
-    +addTask(Task pTask) void
-    +deleteTask(long taskId) void
+    +TaskDataRepository(TaskDao)
+    +getTasks() :LiveData Task[]
+    +addTask(Task) void
+    +deleteTask(long) void
 }
+
+class ItemViewModel extends ViewModel {
+    - final TaskDataRepository taskDataSource;
+    - final ProjectDataRepository projectDataSource;
+    - final Executor executor;
+    - LiveData Task[] currentTasks;
+
+    + ItemViewModel(TaskDataRepository, ProjectDataRepository, Executor)
+    + init() void
+    + getAllProject() :LiveData Project[]
+    + void  addTask(Task)
+    + void  deleteTask(Long)
+    +  getTasks() :LiveData Task[]
+}
+
 
 
 TasksAdapter +-- DeleteTaskListener
 TasksAdapter +-- TaskViewHolder
-Task +-- TaskAZComparator
-Task +-- TaskRecentComparator
-Task +-d- TaskOldComparator
 @enduml

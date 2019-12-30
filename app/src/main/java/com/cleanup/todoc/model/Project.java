@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
  *
  * @author Gaëtan HERFRAY
  */
-@Entity
+@Entity(tableName = "project")
 public class Project {
     /**
      * The unique identifier of the project
@@ -88,7 +88,6 @@ public class Project {
      *
      * @param pId the unique identifier of the project associated to the task.
      */
-    //TODO set id project
     public void setId(long pId) {
         id = pId;
     }
