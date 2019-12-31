@@ -83,12 +83,11 @@ class Project {
     }
 
 class TasksAdapter extends RecyclerView.Adapter{
-    private List<Task> tasks;
-    private final DeleteTaskListener deleteTaskListener;
-    TasksAdapter(final Task[], DeleteTaskListener )
-    void updateTasks(Task[])
-    public interface DeleteTaskListener
-    bind(Task) void
+        - Task[] tasks;
+        - Project[] taskProject
+        - DeleteTaskListener deleteTaskListener {readOnly}
+        + TasksAdapter( DeleteTaskListener ) {
+        + updateTasks(Project[], Task[])
 }
 
 class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -97,11 +96,12 @@ class TaskViewHolder extends RecyclerView.ViewHolder {
         - TextView lblProjectName {readOnly}
         - AppCompatImageView imgDelete {readOnly}
         - DeleteTaskListener deleteTaskListener {readOnly}
-          TaskViewHolder(View, DeleteTaskListener)
+        + TaskViewHolder(View, DeleteTaskListener)
+        + bind(Task) void
     }
 
 interface DeleteTaskListener {
-            void onDeleteTask(Task task);
+            void onDeleteTask(Task);
 }
 
 
@@ -137,6 +137,36 @@ class ItemViewModel extends ViewModel {
 + deleteTask(Long) void
 + getTasks() :LiveData Task[]
 }
+
+class TaskDataRepository {
+    -TaskDao taskDao {readOnly}
+    +TaskDataRepository(TaskDao)
+    +getTasks() :LiveData Task[]
+    + addTask(Task) void
+    + deleteTask(long taskId) void
+}
+
+class ProjectDataRepository {
+    - ProjectDao projectDao {readOnly}
+    + ProjectDataRepository(ProjectDao pProjectDao)
+    + getAllProject() :LiveData Project[]
+}
+
+class ViewModelFactory implements ViewModelProvider.Factory {
+    - ProjectDataRepository projectDataSource {readOnly}
+    - TaskDataRepository taskDataSource {readOnly}
+    - Executor executor {readOnly}
+    public ViewModelFactory(TaskDataRepository, ProjectDataRepository , Executor)
+}
+
+class Injection {
++ {static} ProjectDataRepository provideProjectDataSource(Context):ProjectDataRepository(dataBase.ProjectDao())
++ {static} TaskDataRepository provideTaskDataSource(Context):TaskDataRepository(dataBase.taskDao());
++ {static} Executor provideExecutor() :Executors.newSingleThreadExecutor()
++ {static} ViewModelFactory provideViewModelFactory(Context):ViewModelFactory(dataSourceTask, dataSourceProject, executor);
+}
+
+
 
 TasksAdapter +-- DeleteTaskListener
 TasksAdapter +-- TaskViewHolder
