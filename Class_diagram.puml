@@ -3,18 +3,20 @@ skinparam classAttributeIconSize 0
 
 class MainActivity extends AppCompatActivity implements DeleteTaskListener {
 
-    - Project[] allProjects {readOnly}
-    - ArrayList<Task> tasks {readOnly}
+    - Project[] allProjects
+    - Task[] tasks
     - TasksAdapter adapter {readOnly}
     - SortMethod sortMethod
     + AlertDialog dialog
+    - EditText dialogEditText
     - Spinner dialogSpinner
     - RecyclerView listTasks
+    - TextView lblNoTasks
+    - ItemViewModel itemViewModel
 
     - onPositiveButtonClick(DialogInterface)
-    - showAddTaskDialog()
-    - addTask(Task task)
     - showAddTaskDialog() void
+    - addTask(Task) void
     - updateTasks()
     - AlertDialog getAddTaskDialog()
     - populateDialogSpinner()
@@ -24,6 +26,8 @@ class MainActivity extends AppCompatActivity implements DeleteTaskListener {
                               OLD_FIRST,
                               NONE}
     - configureViewModel() void
+    - getTasks() void
+    - getAllProject() void
 }
 
 
@@ -107,7 +111,6 @@ interface TaskDao{
 +int deleteTask(long taskId) void
 }
 
-
 interface ProjectDao {
 +getAllProject() :LiveData Project[]
 +long createProject(Project) void
@@ -120,6 +123,21 @@ class TodocDataBase <<abstract>>  extends RoomDatabase {
 +{static} TodocDataBase getInstance(Context) :INSTANCE
 -{static} Callback prepopulateDatabase()
 }
+
+
+class ItemViewModel extends ViewModel {
+- TaskDataRepository taskDataSource {readOnly}
+- ProjectDataRepository projectDataSource {readOnly}
+- Executor executor {readOnly}
+- LiveData Task[] currentTasks;
++ ItemViewModel(TaskDataRepository, ProjectDataRepository, Executor)
++ init()
++ getAllProject() : LiveData Project[]
++ addTask(Task) void
++ deleteTask(Long) void
++ getTasks() :LiveData Task[]
+}
+
 TasksAdapter +-- DeleteTaskListener
 TasksAdapter +-- TaskViewHolder
 @enduml
