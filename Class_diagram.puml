@@ -98,9 +98,28 @@ class TaskViewHolder extends RecyclerView.ViewHolder {
 
 interface DeleteTaskListener {
             void onDeleteTask(Task task);
-        }
+}
 
 
+interface TaskDao{
++getTasks() :LiveData Task[]
++long insertTask(Task pTask) void
++int deleteTask(long taskId) void
+}
+
+
+interface ProjectDao {
++getAllProject() :LiveData Project[]
++long createProject(Project) void
+}
+
+class TodocDataBase <<abstract>>  extends RoomDatabase {
+-{static} volatile TodocDataBase INSTANCE
++{abstract} TaskDao taskDao();
++{abstract} ProjectDao ProjectDao();
++{static} TodocDataBase getInstance(Context) :INSTANCE
+-{static} Callback prepopulateDatabase()
+}
 TasksAdapter +-- DeleteTaskListener
 TasksAdapter +-- TaskViewHolder
 @enduml
