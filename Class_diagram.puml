@@ -148,7 +148,6 @@ class ProjectDataRepository {
   }
 }
 
-
 package dao{
 interface TaskDao{
     +getTasks() :LiveData Task[]
@@ -164,7 +163,7 @@ interface ProjectDao {
 
 
 package database{
-class TodocDataBase <<abstract>> {
+abstract TodocDataBase  {
 -{static} volatile TodocDataBase INSTANCE
 +{abstract} TaskDao taskDao();
 +{abstract} ProjectDao ProjectDao();
