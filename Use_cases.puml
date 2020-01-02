@@ -1,16 +1,20 @@
 @startuml
-User -> (Start)
 
-top to bottom direction
-
-skinparam packageStyle rectangle
-Rectangle System {
 left to right direction
-User --> (Lister les tâches des projets)
-User --> (Ajouter une tâche)
+skinparam packageStyle rectangle
+actor user
+user -> (Start)
 
-(Ajouter une tâche).> (Choisir un projet):include
-(Ajouter une tâche).> (Saisir une tâche):include
+Rectangle System {
+user --> (Lister les tâches des projets)
+(Lister les tâches des projets) .> (Supprimer une tâche):extends
+user --> (Ajouter une tâche)
 
+(Lister les tâches des projets) .> (Trier les taches):extends
+(Trier les taches) .>  (De A à Z):extends
+(Trier les taches) .> (De Z à A):extends
+(Trier les taches) .> (+Récentes --> +Anciennes):extends
+(Trier les taches) .> (+Anciennes --> +Récentes):extends
 }
+
 @enduml

@@ -31,7 +31,6 @@ class MainActivity extends AppCompatActivity implements DeleteTaskListener {
 }
 
 MainActivity --> "1..*" Task
-MainActivity --> "1" Injection
 MainActivity --> "1" ItemViewModel
 
 
@@ -53,19 +52,24 @@ class Task {
     - setCreationTimestamp(long) void
 }
 
- class TaskAZComparator <<static>> implements Comparator {
+ class TaskAZComparator <<static>> {
+        + compare(Task left, Task right) :int
+    }
+
+class TaskZAComparator <<static>> {
++ compare(Task left, Task right) :int
+}
+
+class TaskRecentComparator <<static>> {
         + int compare(Task left, Task right) :int
     }
 
-class TaskRecentComparator <<static>> implements Comparator {
+ class TaskOldComparator <<static>> {
         + int compare(Task left, Task right) :int
     }
 
- class TaskOldComparator <<static>> implements Comparator{
-        + int compare(Task left, Task right) :int
-    }
-
-Task +-- "2" TaskAZComparator
+Task +-- TaskAZComparator
+Task +-- TaskZAComparator
 Task +-- TaskRecentComparator
 Task +-- TaskOldComparator
 
@@ -87,7 +91,7 @@ class Project {
     }
 Project "1" - "3" Project
 
-class TasksAdapter extends RecyclerView.Adapter{
+class TasksAdapter {
         - Task[] tasks;
         - Project[] taskProject
         - DeleteTaskListener deleteTaskListener {readOnly}
@@ -95,7 +99,7 @@ class TasksAdapter extends RecyclerView.Adapter{
         + updateTasks(Project[], Task[])
 }
 
-class TaskViewHolder extends RecyclerView.ViewHolder {
+class TaskViewHolder {
         - AppCompatImageView imgProject {readOnly}
         - TextView lblTaskName {readOnly}
         - TextView lblProjectName {readOnly}
@@ -121,7 +125,7 @@ interface ProjectDao {
 +long createProject(Project) void
 }
 
-class TodocDataBase <<abstract>>  extends RoomDatabase {
+class TodocDataBase <<abstract>> {
 -{static} volatile TodocDataBase INSTANCE
 +{abstract} TaskDao taskDao();
 +{abstract} ProjectDao ProjectDao();
@@ -133,7 +137,7 @@ TodocDataBase -->  Project
 TodocDataBase  --> "1" ProjectDao
 TodocDataBase  --> "1" TaskDao
 
-class ItemViewModel extends ViewModel {
+class ItemViewModel {
 - TaskDataRepository taskDataSource {readOnly}
 - ProjectDataRepository projectDataSource {readOnly}
 - Executor executor {readOnly}
@@ -151,7 +155,7 @@ class TaskDataRepository {
     +TaskDataRepository(TaskDao)
     +getTasks() :LiveData Task[]
     + addTask(Task) void
-    + deleteTask(long taskId) void
+    + deleteTask(long) void
 }
 
 class ProjectDataRepository {
@@ -160,11 +164,11 @@ class ProjectDataRepository {
     + getAllProject() :LiveData Project[]
 }
 
-class ViewModelFactory implements ViewModelProvider.Factory {
+class ViewModelFactory {
     - ProjectDataRepository projectDataSource {readOnly}
     - TaskDataRepository taskDataSource {readOnly}
     - Executor executor {readOnly}
-    public ViewModelFactory(TaskDataRepository, ProjectDataRepository , Executor)
+    + ViewModelFactory(TaskDataRepository, ProjectDataRepository , Executor)
 }
 
 class Injection {
@@ -174,10 +178,7 @@ class Injection {
 + {static} ViewModelFactory provideViewModelFactory(Context):ViewModelFactory(dataSourceTask, dataSourceProject, executor);
 }
 
-Injection --> "1" TodocDataBase
-Injection --> "1" TaskDataRepository
-Injection --> "1" ProjectDataRepository
-Injection --> "1" ViewModelFactory
+
 
 TasksAdapter +-- DeleteTaskListener
 TasksAdapter +-- TaskViewHolder

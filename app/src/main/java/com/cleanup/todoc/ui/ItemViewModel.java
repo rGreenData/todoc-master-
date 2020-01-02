@@ -18,7 +18,7 @@ public class ItemViewModel extends ViewModel {
     private final Executor executor;
 
     //DATA
-    private LiveData<List<Task>> currentTasks;
+    private LiveData<List<Project>> currentProject;
 
     public ItemViewModel(TaskDataRepository pItemDataSource, ProjectDataRepository pProjectDataSource, Executor pExecutor) {
         this.taskDataSource = pItemDataSource;
@@ -27,14 +27,14 @@ public class ItemViewModel extends ViewModel {
     }
 
     public void init(){
-        if(this.currentTasks != null){
+        if(this.currentProject != null){
             return;
         }
-        currentTasks = taskDataSource.getTasks();
+        currentProject = projectDataSource.getAllProject();
     }
 
     //FOR PROJECT
-    public LiveData<List<Project>>getAllProject(){ return this.projectDataSource.getAllProject(); }
+    public LiveData<List<Project>>getAllProject(){ return currentProject; }
 
     //FOR TASK
     public void  addTask(final Task pTask){
