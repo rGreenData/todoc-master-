@@ -1,8 +1,8 @@
 @startuml
 skinparam classAttributeIconSize 0
 
-class MainActivity extends AppCompatActivity implements DeleteTaskListener {
-
+package ui {
+class MainActivity implements DeleteTaskListener {
     - Project[] allProjects
     - Task[] tasks
     - TasksAdapter adapter {readOnly}
@@ -20,65 +20,64 @@ class MainActivity extends AppCompatActivity implements DeleteTaskListener {
     - updateTasks()
     - AlertDialog getAddTaskDialog()
     - populateDialogSpinner()
-    - enum SortMethod{ALPHABETICAL,
-                              ALPHABETICAL_INVERTED,
-                              RECENT_FIRST,
-                              OLD_FIRST,
-                              NONE}
     - configureViewModel() void
     - getTasks() void
     - getAllProject() void
 }
+MainActivity --> "1" TasksAdapter :adapter
+MainActivity +-- SortMethod
 
-MainActivity --> "1..*" Task
-MainActivity --> "1" ItemViewModel
-
-
-class Task {
-    - long id;
-    - long projectId;
-    - String name;
-    - long creationTimestamp;
-
-    + Task(long, long, String, long)
-    + getId() :long
-    + setId(long) void
-    + getProject() :Project.getProjectById(projectId)
-    + getProjectId() :long
-    + setProjectId(long) void
-    + getName() :String
-    + setName(String) void
-    + getCreationTimestamp() :long
-    - setCreationTimestamp(long) void
+enum SortMethod{
+    ALPHABETICAL
+    ALPHABETICAL_INVERTED
+    RECENT_FIRST
+    OLD_FIRST
+    NONE
 }
 
- class TaskAZComparator <<static>> {
-        + compare(Task left, Task right) :int
-    }
-
-class TaskZAComparator <<static>> {
-+ compare(Task left, Task right) :int
+class ItemViewModel {
+    - TaskDataRepository taskDataSource {readOnly}
+    - ProjectDataRepository projectDataSource {readOnly}
+    - Executor executor {readOnly}
+    - LiveData Task[] currentTasks;
+    + ItemViewModel(TaskDataRepository, ProjectDataRepository, Executor)
+    + init()
+    + getAllProject() : LiveData Project[]
+    + addTask(Task) void
+    + deleteTask(Long) void
+    + getTasks() :LiveData Task[]
 }
 
-class TaskRecentComparator <<static>> {
-        + int compare(Task left, Task right) :int
-    }
+class TasksAdapter {
+    - Task[] tasks
+    - Project[] taskProject
+    - DeleteTaskListener deleteTaskListener {readOnly}
+    + TasksAdapter(DeleteTaskListener)
+    + updateTasks(Project[], Task[])
+}
 
- class TaskOldComparator <<static>> {
-        + int compare(Task left, Task right) :int
-    }
+interface DeleteTaskListener {
+            void onDeleteTask(Task)
+}
 
-Task +-- TaskAZComparator
-Task +-- TaskZAComparator
-Task +-- TaskRecentComparator
-Task +-- TaskOldComparator
+class TaskViewHolder {
+    - AppCompatImageView imgProject {readOnly}
+    - TextView lblTaskName {readOnly}
+    - TextView lblProjectName {readOnly}
+    - AppCompatImageView imgDelete {readOnly}
+    - DeleteTaskListener deleteTaskListener {readOnly}
+    + TaskViewHolder(View, DeleteTaskListener)
+    + bind(Task) void
+}
+}
 
 
-class Project {
+
+package model{
+    class Project {
     -long id
     -String name
     -int color
-
     -Project(long , String , int)
     +{static} getAllProjects() :Project[]
     +{static} getProjectById(long id) :Project
@@ -88,68 +87,51 @@ class Project {
     +setName(String) void
     +getColor() :int
     +toString() :getName
-    }
+}
+
 Project "1" - "3" Project
 
-class TasksAdapter {
-        - Task[] tasks;
-        - Project[] taskProject
-        - DeleteTaskListener deleteTaskListener {readOnly}
-        + TasksAdapter( DeleteTaskListener ) {
-        + updateTasks(Project[], Task[])
+class Task {
+    - long id
+    - long projectId
+    - String name;
+    - long creationTimestamp;
+    + Task(long, long, String, long)
+    + getId() :long
+    + setId(long) void
+    + getProject() :Project
+    + getProjectId() :long
+    + setProjectId(long) void
+    + getName() :String
+    + setName(String) void
+    + getCreationTimestamp() :long
+    - setCreationTimestamp(long) void
 }
 
-class TaskViewHolder {
-        - AppCompatImageView imgProject {readOnly}
-        - TextView lblTaskName {readOnly}
-        - TextView lblProjectName {readOnly}
-        - AppCompatImageView imgDelete {readOnly}
-        - DeleteTaskListener deleteTaskListener {readOnly}
-        + TaskViewHolder(View, DeleteTaskListener)
-        + bind(Task) void
-    }
-
-interface DeleteTaskListener {
-            void onDeleteTask(Task);
+class TaskAZComparator <<static>> {
++ compare(Task left, Task right) :int
 }
 
-
-interface TaskDao{
-+getTasks() :LiveData Task[]
-+long insertTask(Task pTask) void
-+int deleteTask(long taskId) void
+class TaskZAComparator <<static>> {
++ compare(Task left, Task right) :int
 }
 
-interface ProjectDao {
-+getAllProject() :LiveData Project[]
-+long createProject(Project) void
+class TaskRecentComparator <<static>> {
++ int compare(Task left, Task right) :int
 }
 
-class TodocDataBase <<abstract>> {
--{static} volatile TodocDataBase INSTANCE
-+{abstract} TaskDao taskDao();
-+{abstract} ProjectDao ProjectDao();
-+{static} TodocDataBase getInstance(Context) :INSTANCE
--{static} Callback prepopulateDatabase()
+class TaskOldComparator <<static>> {
++ int compare(Task left, Task right) :int
 }
 
-TodocDataBase -->  Project
-TodocDataBase  --> "1" ProjectDao
-TodocDataBase  --> "1" TaskDao
+Task +-- TaskAZComparator
+Task +-- TaskZAComparator
+Task +-- TaskRecentComparator
+Task +-- TaskOldComparator
 
-class ItemViewModel {
-- TaskDataRepository taskDataSource {readOnly}
-- ProjectDataRepository projectDataSource {readOnly}
-- Executor executor {readOnly}
-- LiveData Task[] currentTasks;
-+ ItemViewModel(TaskDataRepository, ProjectDataRepository, Executor)
-+ init()
-+ getAllProject() : LiveData Project[]
-+ addTask(Task) void
-+ deleteTask(Long) void
-+ getTasks() :LiveData Task[]
 }
 
+package repository {
 class TaskDataRepository {
     -TaskDao taskDao {readOnly}
     +TaskDataRepository(TaskDao)
@@ -158,12 +140,44 @@ class TaskDataRepository {
     + deleteTask(long) void
 }
 
+
 class ProjectDataRepository {
     - ProjectDao projectDao {readOnly}
-    + ProjectDataRepository(ProjectDao pProjectDao)
+    + ProjectDataRepository(ProjectDao)
     + getAllProject() :LiveData Project[]
+  }
 }
 
+
+package dao{
+interface TaskDao{
+    +getTasks() :LiveData Task[]
+    +long insertTask(Task pTask) void
+    +int deleteTask(long taskId) void
+   }
+
+interface ProjectDao {
+    +getAllProject() :LiveData Project[]
+    +long createProject(Project) void
+   }
+}
+
+
+package database{
+class TodocDataBase <<abstract>> {
+-{static} volatile TodocDataBase INSTANCE
++{abstract} TaskDao taskDao();
++{abstract} ProjectDao ProjectDao();
++{static} TodocDataBase getInstance(Context) :INSTANCE
+-{static} Callback prepopulateDatabase()
+}
+}
+
+
+
+
+
+package injection {
 class ViewModelFactory {
     - ProjectDataRepository projectDataSource {readOnly}
     - TaskDataRepository taskDataSource {readOnly}
@@ -172,14 +186,33 @@ class ViewModelFactory {
 }
 
 class Injection {
-+ {static} ProjectDataRepository provideProjectDataSource(Context):ProjectDataRepository(dataBase.ProjectDao())
-+ {static} TaskDataRepository provideTaskDataSource(Context):TaskDataRepository(dataBase.taskDao());
-+ {static} Executor provideExecutor() :Executors.newSingleThreadExecutor()
-+ {static} ViewModelFactory provideViewModelFactory(Context):ViewModelFactory(dataSourceTask, dataSourceProject, executor);
+    - {static}TodocDataBase dataBase
+    + {static} ProjectDataRepository provideProjectDataSource(Context):ProjectDataRepository(dataBase.ProjectDao())
+    + {static} TaskDataRepository provideTaskDataSource(Context):TaskDataRepository(dataBase.taskDao())
+    + {static} Executor provideExecutor() :Executors.newSingleThreadExecutor()
+    + {static} ViewModelFactory provideViewModelFactory(Context):ViewModelFactory(dataSourceTask, dataSourceProject, executor)
+    }
 }
 
 
+MainActivity --> "1..*" Task : task
+MainActivity --> "1" ItemViewModel :itemViewModel
+
+Injection --> "1" ViewModelFactory
+Injection --> "1" ProjectDataRepository
+Injection --> "1" TaskDataRepository
+Injection --> "1" TodocDataBase :dataBase
 
 TasksAdapter +-- DeleteTaskListener
 TasksAdapter +-- TaskViewHolder
+
+TodocDataBase -->  Project
+TodocDataBase  --> "1" ProjectDao
+TodocDataBase  --> "1" TaskDao
+
+
+TaskDataRepository --> "1" TaskDao : taskDao
+ProjectDataRepository --> "1" ProjectDao :ProjectDao
+ViewModelFactory --> "1" ItemViewModel
+
 @enduml
