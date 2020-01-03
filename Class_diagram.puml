@@ -24,8 +24,6 @@ class MainActivity implements DeleteTaskListener {
     - getTasks() void
     - getAllProject() void
 }
-MainActivity --> "1" TasksAdapter :adapter
-MainActivity +-- SortMethod
 
 enum SortMethod{
     ALPHABETICAL
@@ -71,8 +69,6 @@ class TaskViewHolder {
 }
 }
 
-
-
 package model{
     class Project {
     -long id
@@ -88,6 +84,8 @@ package model{
     +getColor() :int
     +toString() :getName
 }
+note left : Table <<project>> dataBase
+
 
 Project "1" - "3" Project
 
@@ -108,6 +106,8 @@ class Task {
     - setCreationTimestamp(long) void
 }
 
+note left : Table <<task>> dataBase
+
 class TaskAZComparator <<static>> {
 + compare(Task left, Task right) :int
 }
@@ -123,12 +123,6 @@ class TaskRecentComparator <<static>> {
 class TaskOldComparator <<static>> {
 + int compare(Task left, Task right) :int
 }
-
-Task +-- TaskAZComparator
-Task +-- TaskZAComparator
-Task +-- TaskRecentComparator
-Task +-- TaskOldComparator
-
 }
 
 package repository {
@@ -173,9 +167,6 @@ abstract TodocDataBase  {
 }
 
 
-
-
-
 package injection {
 class ViewModelFactory {
     - ProjectDataRepository projectDataSource {readOnly}
@@ -183,7 +174,6 @@ class ViewModelFactory {
     - Executor executor {readOnly}
     + ViewModelFactory(TaskDataRepository, ProjectDataRepository , Executor)
 }
-
 class Injection {
     - {static}TodocDataBase dataBase
     + {static} ProjectDataRepository provideProjectDataSource(Context):ProjectDataRepository(dataBase.ProjectDao())
@@ -193,25 +183,38 @@ class Injection {
     }
 }
 
-
-MainActivity --> "1..*" Task : task
+MainActivity --> "1" TasksAdapter :adapter
+MainActivity +-- SortMethod
+MainActivity --> "1..*" Task : tasks
+MainActivity --> Project :allProjects
 MainActivity --> "1" ItemViewModel :itemViewModel
-
-Injection --> "1" ViewModelFactory
-Injection --> "1" ProjectDataRepository
+note "configureViewModel(){\nInjection.provideViewModelFactory()}" as N1
+MainActivity.N1
+N1..>Injection
+Injection -> "1" ViewModelFactory
+Injection -> "1" ProjectDataRepository
 Injection --> "1" TaskDataRepository
 Injection --> "1" TodocDataBase :dataBase
+
+Task +-- TaskAZComparator
+Task +-- TaskZAComparator
+Task +-- TaskRecentComparator
+Task +-- TaskOldComparator
 
 TasksAdapter +-- DeleteTaskListener
 TasksAdapter +-- TaskViewHolder
 
-TodocDataBase -->  Project
 TodocDataBase  --> "1" ProjectDao
 TodocDataBase  --> "1" TaskDao
-
+note "prepopulateDatabase(){\nProject.getAllProjects()}" as N3
+TodocDataBase..N3
+N3..>Project
 
 TaskDataRepository --> "1" TaskDao : taskDao
 ProjectDataRepository --> "1" ProjectDao :ProjectDao
-ViewModelFactory --> "1" ItemViewModel
+
+note "@Override create(){\nnew ItemViewModel(taskDataSource, projectDataSource, executor)}" as N2
+ViewModelFactory..N2
+N2..>ItemViewModel
 
 @enduml
