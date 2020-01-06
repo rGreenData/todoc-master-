@@ -4,12 +4,11 @@ projects : id
 projects : name
 projects : color
 
-
 object tasks
 tasks : id
 tasks : user_id
 tasks : name
 tasks : date
 
-projects "1" --- "1..*"  tasks
+projects "1" -right-  "    1..*"  tasks :"                   "
 @enduml

@@ -7,14 +7,15 @@ user -> (Start)
 
 Rectangle System {
 user --> (Lister les tâches des projets)
-(Lister les tâches des projets) .> (Supprimer une tâche):extends
+user --> (Supprimer une tâche)
 user --> (Ajouter une tâche)
+user --> (Trier les taches)
 
-(Lister les tâches des projets) .> (Trier les taches):extends
-(Trier les taches) .>  (De A à Z):extends
+(Trier les taches) -.> (+Récentes --> +Anciennes):extends
+(Trier les taches) -.> (+Anciennes --> +Récentes):extends
+(Trier les taches) -.>  (De A à Z):extends
 (Trier les taches) .> (De Z à A):extends
-(Trier les taches) .> (+Récentes --> +Anciennes):extends
-(Trier les taches) .> (+Anciennes --> +Récentes):extends
+
 }
 
 @enduml

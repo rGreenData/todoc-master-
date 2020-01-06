@@ -14,10 +14,6 @@ import com.cleanup.todoc.dao.TaskDao;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 
-import java.util.Date;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 @Database(entities = {Task.class, Project.class}, version = 1, exportSchema = false)
     public abstract class TodocDataBase extends RoomDatabase {
 
@@ -44,7 +40,7 @@ import java.util.concurrent.Executors;
         }
 
     /** Prepopulate the data base with projects from project class
-     * @return
+     *
      */
     private static Callback prepopulateDatabase(){
             return new Callback() {

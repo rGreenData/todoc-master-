@@ -99,7 +99,7 @@ class Task {
     + setId(long) void
     + getProject() :Project
     + getProjectId() :long
-    + setProjectId(long) void
+    - setProjectId(long) void
     + getName() :String
     + setName(String) void
     + getCreationTimestamp() :long

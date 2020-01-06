@@ -364,6 +364,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             @Override
             public void onChanged(@Nullable List<Project> pProjects) {
                 allProjects = pProjects;
+                updateTasks();
             }
         });
     }
