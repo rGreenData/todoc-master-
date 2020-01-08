@@ -1,22 +1,25 @@
-package com.cleanup.todoc.dao;
+package com.cleanupdoc.project.dao;
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.arch.persistence.room.Room;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import com.cleanup.todoc.database.TodocDataBase;
-import com.cleanup.todoc.model.Project;
-import com.cleanup.todoc.model.Task;
+
+import com.cleanupdoc.project.database.TodocDataBase;
+import com.cleanupdoc.project.model.Project;
+import com.cleanupdoc.project.model.Task;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import java.util.Date;
 import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 
 @RunWith(AndroidJUnit4.class)

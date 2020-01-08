@@ -1,11 +1,11 @@
-package com.cleanup.todoc.Injection;
+package com.cleanupdoc.project.Injection;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
-import com.cleanup.todoc.repository.ProjectDataRepository;
-import com.cleanup.todoc.repository.TaskDataRepository;
-import com.cleanup.todoc.ui.ItemViewModel;
+import com.cleanupdoc.project.repository.ProjectDataRepository;
+import com.cleanupdoc.project.repository.TaskDataRepository;
+import com.cleanupdoc.project.ui.ItemViewModel;
 import java.util.concurrent.Executor;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
