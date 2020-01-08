@@ -24,3 +24,4 @@
 #-dontwarn org.w3c.dom.**
 #-dontwarn jcifs.http.NetworkExplorer
 -dontwarn okio.**
+#-Xlint:unchecked
