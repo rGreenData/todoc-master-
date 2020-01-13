@@ -11,11 +11,10 @@ user --> (Supprimer une tâche)
 user --> (Ajouter une tâche)
 user --> (Trier les taches)
 
-(Trier les taches) -.> (+Récentes --> +Anciennes):extends
-(Trier les taches) -.> (+Anciennes --> +Récentes):extends
-(Trier les taches) -.>  (De A à Z):extends
-(Trier les taches) .> (De Z à A):extends
-
+(Trier les taches) <|-- (+Récentes --> +Anciennes)
+(Trier les taches) <|- (+Anciennes --> +Récentes)
+(Trier les taches) <|--  (De A à Z)
+(Trier les taches) <|-- (De Z à A)
 }
 
 @enduml

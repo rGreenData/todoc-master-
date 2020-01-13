@@ -9,18 +9,18 @@ import java.util.concurrent.Executors;
 
 public class Injection {
 
-    private static TodocDataBase dataBase;
+
 
 public static ProjectDataRepository provideProjectDataSource(Context context){
 
-     dataBase = TodocDataBase.getInstance(context);
+    TodocDataBase dataBase = TodocDataBase.getInstance(context);
 
     return new ProjectDataRepository(dataBase.ProjectDao());
 }
 
 public static TaskDataRepository provideTaskDataSource(Context context){
 
-    dataBase = TodocDataBase.getInstance(context);
+    TodocDataBase dataBase = TodocDataBase.getInstance(context);
 
     return new TaskDataRepository(dataBase.taskDao());
 }
